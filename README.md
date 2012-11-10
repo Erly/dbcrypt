@@ -13,9 +13,18 @@ much as I can (which probably isn't much) so with time the library will become
 usable at production level. Any help to make it faster and correct bugs is 
 appreciated.
 
-P.D: The problem is in the _encipher method which is called more than 2000000 
+P.D: The problem is in the *_encipher* method which is called more than 2000000 
 times to hash a password with the default salt. it takes more than 30ms for each
 1000 calls while in java it takes less than 1ms
+
+Installing
+-------------
+
+Add to your pubspec.yaml the following:
+
+	dependencies:
+	  dbcrypt:
+	    git: git@github.com:Erly/dbcrypt.git
 
 Running Tests
 -------------
