@@ -1,0 +1,7 @@
+name:  dbcrypt
+version: 0.0.1
+description:  A port of JBCrypt to Dart
+author: Erlantz Oniga <erlantz8@gmail.com>
+
+dependencies:
+  unittest: { sdk: unittest }
