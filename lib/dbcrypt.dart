@@ -69,12 +69,12 @@ class DBCrypt {
   final int _BLOWFISH_NUM_ROUNDS = 16;
 
   // Initial contents of key schedule
-  final Int64List _P_orig = new Int64List(18);
+  final Int32List _P_orig = new Int32List(18);
 
-  final Int64List _S_orig = new Int64List(1024);
+  final Int32List _S_orig = new Int32List(1024);
 
   // bcrypt IV: "OrpheanBeholderScryDoubt"
-  final Int64List _bf_crypt_ciphertext = new Int64List(6);
+  final Int32List _bf_crypt_ciphertext = new Int32List(6);
 
   // Table for Base64 encoding
   final List _base64_code = [
@@ -90,8 +90,8 @@ class DBCrypt {
   final Int8List _index_64 = new Int8List(128);
 
 // Expanded Blowfish key
-  Int64List _P = new Int64List(18);
-  Int64List _S = new Int64List(1024);
+  Int32List _P = new Int32List(18);
+  Int32List _S = new Int32List(1024);
 
   /**
    * Encode a byte array using bcrypt's slightly-modified base64
@@ -203,7 +203,7 @@ class DBCrypt {
    * @param lr  an array containing the two 32-bit half blocks
    * @param off the position in the array of the blocks
    */
-  _encipher(Int64List lr, int off) {
+  _encipher(Int32List lr, int off) {
     int i, n, l = lr[off], r = lr[off + 1];
 
     l ^= _P[0];
@@ -233,7 +233,7 @@ class DBCrypt {
    * current offset into data
    * @return  the next word of material from data
    */
-  int _streamtoword(Int8List data, Int64List offp) {
+  int _streamtoword(Int8List data, Int32List offp) {
     int i;
     int word = 0, off = offp[0];
 
@@ -264,9 +264,9 @@ class DBCrypt {
    */
   _key(Int8List key) {
     int i;
-    Int64List koffp = new Int64List(1);
+    Int32List koffp = new Int32List(1);
     koffp[0] = 0;
-    Int64List lr = new Int64List(2);
+    Int32List lr = new Int32List(2);
     lr[0] = 0; lr[1] = 0;
     int plen = _P.length, slen = _S.length;
 
@@ -295,11 +295,11 @@ class DBCrypt {
    */
   _ekskey(Int8List data, Int8List key) {
     int i;
-    Int64List koffp = new Int64List(1);
+    Int32List koffp = new Int32List(1);
     koffp[0] = 0;
-    Int64List doffp = new Int64List(1);
+    Int32List doffp = new Int32List(1);
     doffp[0] = 0;
-    Int64List lr = new Int64List(2);
+    Int32List lr = new Int32List(2);
     lr[0] = 0; lr[1] = 0;
     int plen = _P.length, slen = _S.length;
 
@@ -334,7 +334,7 @@ class DBCrypt {
    */
   Int8List _crypt_raw(Int8List password, Int8List salt, int log_rounds) {
     int rounds, i, j;
-    Int64List cdata = new Int64List(_bf_crypt_ciphertext.length);
+    Int32List cdata = new Int32List(_bf_crypt_ciphertext.length);
     for (int i = 0; i < _bf_crypt_ciphertext.length; i++) {
       cdata[i] = _bf_crypt_ciphertext[i];
     }

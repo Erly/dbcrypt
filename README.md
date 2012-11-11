@@ -1,12 +1,12 @@
 DBCrypt
 ===================
 
-Port of [JBCrypt][jbc] to [Dart][d]. Actually unusable because it is really slow (it
-takes more than 60s to hash a password with the default salt). The previous version
-was more similar to the original code but took more than 100 seconds so I did
-several changes (using a factory constructor and making the methods and variables 
-non-static) to support the scalarlist lib which reduced the time it takes to
-hash but clearly not enough.
+Port of [jBCrypt][jbc] to [Dart][d]. Actually unusable because it is really slow (it
+takes more than 30s to hash a password with the default salt on a Intel i5-3570 
+on Linux). The first version was more similar to the original code but took 
+more than 100 seconds so I did several changes (using a factory constructor and 
+making the methods and variables non-static) to support the scalarlist lib which 
+reduced the time it takes to hash but clearly not enough.
 
 Dart VM will become faster in the future and I'll try to optimize the code as
 much as I can (which probably isn't much) so with time the library will become
