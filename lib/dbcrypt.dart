@@ -90,8 +90,8 @@ class DBCrypt {
   final Int8List _index_64 = new Int8List(128);
 
 // Expanded Blowfish key
-  Int32List _P = new Int32List(18);
-  Int32List _S = new Int32List(1024);
+  List _P = new List(18);
+  List _S = new List(1024);
 
   /**
    * Encode a byte array using bcrypt's slightly-modified base64
@@ -104,12 +104,12 @@ class DBCrypt {
    * @exception IllegalArgumentException if the length is invalid
    */
   String _encode_base64(Int8List d, int len) {
-    int off = 0;
+    var off = 0, c1, c2;
     StringBuffer rs = new StringBuffer();
-    int c1, c2;
+
 
     if (len <= 0 || len > d.length)
-      throw new IllegalArgumentException ("Invalid len");
+      throw "Invalid len";
 
     while (off < len) {
       c1 = d[off++] & 0xff;
@@ -142,7 +142,7 @@ class DBCrypt {
    * @return  the decoded value of x
    */
   int _char64(String x) {
-    int charCode = x.charCodeAt(0);
+    var charCode = x.charCodeAt(0);
     if (charCode < 0 || charCode > _index_64.length)
       return -1;
     return _index_64[x.charCodeAt(0)];
@@ -157,14 +157,13 @@ class DBCrypt {
    * @return  an array containing the decoded bytes
    * @throws IllegalArgumentException if maxolen is invalid
    */
-  Int8List _decode_base64(String s, int maxolen) {
+  Int8List _decode_base64(String s, var maxolen) {
     StringBuffer rs = new StringBuffer();
-    int off = 0, slen = s.length, olen = 0;
+    var off = 0, slen = s.length, olen = 0, c1, c2, c3, c4, o;
     Int8List ret;
-    int c1, c2, c3, c4, o;
 
     if (maxolen <= 0)
-      throw new IllegalArgumentException ("Invalid maxolen");
+      throw "Invalid maxolen";
 
     while (off < slen - 1 && olen < maxolen) {
       c1 = _char64(s[off++]);
@@ -203,8 +202,8 @@ class DBCrypt {
    * @param lr  an array containing the two 32-bit half blocks
    * @param off the position in the array of the blocks
    */
-  _encipher(Int32List lr, int off) {
-    int i, n, l = lr[off], r = lr[off + 1];
+  _encipher(Int32List lr, var off) {
+    var i, n, l = lr[off], r = lr[off + 1];
 
     l ^= _P[0];
     for (i = 0; i <= _BLOWFISH_NUM_ROUNDS - 2;) {
@@ -234,8 +233,7 @@ class DBCrypt {
    * @return  the next word of material from data
    */
   int _streamtoword(Int8List data, Int32List offp) {
-    int i;
-    int word = 0, off = offp[0];
+    var i, word = 0, off = offp[0];
 
     for (i = 0; i < 4; i++) {
       word = (word << 8) | (data[off] & 0xff);
@@ -250,12 +248,14 @@ class DBCrypt {
    * Initialise the Blowfish key schedule
    */
   _init_key() {
-    for (int i = 0; i < _P_orig.length; i++) {
+    /*for (var i = 0; i < _P_orig.length; i++) {
       _P[i] = _P_orig[i];
     }
-    for (int i = 0; i < _S_orig.length; i++) {
+    for (var i = 0; i < _S_orig.length; i++) {
       _S[i] = _S_orig[i];
-    }
+    }*/
+    _P = _P_orig.getRange(0, _P_orig.length);
+    _S = _S_orig.getRange(0, _S_orig.length);
   }
 
   /**
@@ -263,12 +263,11 @@ class DBCrypt {
    * @param key an array containing the key
    */
   _key(Int8List key) {
-    int i;
+    var i, plen = _P.length, slen = _S.length;;
     Int32List koffp = new Int32List(1);
     koffp[0] = 0;
     Int32List lr = new Int32List(2);
     lr[0] = 0; lr[1] = 0;
-    int plen = _P.length, slen = _S.length;
 
     for (i = 0; i < plen; i++)
       _P[i] = _P[i] ^ _streamtoword(key, koffp);
@@ -294,14 +293,13 @@ class DBCrypt {
    * @param key password information
    */
   _ekskey(Int8List data, Int8List key) {
-    int i;
+    var i, plen = _P.length, slen = _S.length;;
     Int32List koffp = new Int32List(1);
     koffp[0] = 0;
     Int32List doffp = new Int32List(1);
     doffp[0] = 0;
     Int32List lr = new Int32List(2);
     lr[0] = 0; lr[1] = 0;
-    int plen = _P.length, slen = _S.length;
 
     for (i = 0; i < plen; i++)
       _P[i] = _P[i] ^ _streamtoword(key, koffp);
@@ -333,19 +331,19 @@ class DBCrypt {
    * @return  an array containing the binary hashed password
    */
   Int8List _crypt_raw(Int8List password, Int8List salt, int log_rounds) {
-    int rounds, i, j;
+    var rounds, i, j;
     Int32List cdata = new Int32List(_bf_crypt_ciphertext.length);
     for (int i = 0; i < _bf_crypt_ciphertext.length; i++) {
       cdata[i] = _bf_crypt_ciphertext[i];
     }
-    int clen = cdata.length;
+    var clen = cdata.length;
     Int8List ret;
 
     if (log_rounds < 4 || log_rounds > 31)
-      throw new IllegalArgumentException ("Bad number of rounds");
+      throw "Bad number of rounds";
     rounds = 1 << log_rounds;
     if (salt.length != _BCRYPT_SALT_LEN)
-      throw new IllegalArgumentException ("Bad salt length");
+      throw "Bad salt length";
 
     _init_key();
     _ekskey(salt, password);
@@ -363,11 +361,11 @@ class DBCrypt {
     }
 
     ret = new Int8List(clen * 4);
-    for (int i = 0, j = 0; i < clen; i++) {
-      ret[j++] = ((cdata[i] >> 24) & 0xff) as int;
-      ret[j++] = ((cdata[i] >> 16) & 0xff) as int;
-      ret[j++] = ((cdata[i] >> 8) & 0xff) as int;
-      ret[j++] = (cdata[i] & 0xff) as int;
+    for (var i = 0, j = 0; i < clen; i++) {
+      ret[j++] = ((cdata[i] >> 24) & 0xff);
+      ret[j++] = ((cdata[i] >> 16) & 0xff);
+      ret[j++] = ((cdata[i] >> 8) & 0xff);
+      ret[j++] = (cdata[i] & 0xff);
     }
     return ret;
   }
@@ -383,31 +381,31 @@ class DBCrypt {
     DBCrypt B;
     String real_salt;
     Int8List passwordb, saltb, hashed;
-    String minor = new String.fromCharCodes([0]);
-    int rounds, off = 0;
+    var minor = new String.fromCharCodes([0]);
+    var rounds, off = 0;
     StringBuffer rs = new StringBuffer();
 
     if (salt[0] != '\$' || salt[1] != '2')
-      throw new IllegalArgumentException ("Invalid salt version");
+      throw "Invalid salt version";
     if (salt[2] == '\$')
       off = 3;
     else {
       minor = salt[2];
       if (minor != 'a' || salt[3] != '\$')
-        throw new IllegalArgumentException ("Invalid salt revision");
+        throw "Invalid salt revision";
       off = 4;
     }
 
     // Extract number of rounds
     if (salt[off + 2].charCodeAt(0) > '\$'.charCodeAt(0))
-      throw new IllegalArgumentException ("Missing salt rounds");
+      throw "Missing salt rounds";
     rounds = int.parse(salt.substring(off, off + 2));
 
     real_salt = salt.substring(off + 3, off + 25);
     //try {
-      List<int> charCodes = ("$password${(minor.charCodeAt(0) >= 'a'.charCodeAt(0) ? "\000" : "")}").charCodes;
+      List charCodes = ("$password${(minor.charCodeAt(0) >= 'a'.charCodeAt(0) ? "\000" : "")}").charCodes;
       passwordb = new Int8List(charCodes.length);
-      for (int i = 0; i < charCodes.length; i++) {
+      for (var i = 0; i < charCodes.length; i++) {
         passwordb[i] = charCodes[i];
       }
     //} catch (UnsupportedEncodingException uee) {
@@ -445,7 +443,7 @@ class DBCrypt {
     StringBuffer rs = new StringBuffer();
     Int8List rnd = new Int8List(_BCRYPT_SALT_LEN);
 
-    for (int i = 0; i < _BCRYPT_SALT_LEN; i++) {
+    for (var i = 0; i < _BCRYPT_SALT_LEN; i++) {
       rnd[i] = random.nextInt(256) - 128;
     }
 
@@ -498,7 +496,7 @@ class DBCrypt {
   }
 
   DBCrypt._defaultConstructor() {
-    var _PList = [
+    List _PList = [
               0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344,
               0xa4093822, 0x299f31d0, 0x082efa98, 0xec4e6c89,
               0x452821e6, 0x38d01377, 0xbe5466cf, 0x34e90c6c,
@@ -506,7 +504,7 @@ class DBCrypt {
               0x9216d5d9, 0x8979fb1b
               ];
 
-    var _SList = [
+    List _SList = [
                   0xd1310ba6, 0x98dfb5ac, 0x2ffd72db, 0xd01adfb7,
                   0xb8e1afed, 0x6a267e96, 0xba7c9045, 0xf12c7f99,
                   0x24a19947, 0xb3916cf7, 0x0801f2e2, 0x858efc16,
@@ -765,7 +763,7 @@ class DBCrypt {
                   0xb74e6132, 0xce77e25b, 0x578fdfe3, 0x3ac372e6
                   ];
 
-    var _index_64List = [
+    List _index_64List = [
                         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -781,24 +779,24 @@ class DBCrypt {
                         51, 52, 53, -1, -1, -1, -1, -1
                         ];
 
-    var _bf_crypt_ciphertextList = [
+    List _bf_crypt_ciphertextList = [
                                     0x4f727068, 0x65616e42, 0x65686f6c,
                                     0x64657253, 0x63727944, 0x6f756274
                                     ];
 
-    for (int i = 0; i < 18; i++) {
+    for (var i = 0; i < 18; i++) {
       _P_orig[i] = _PList[i];
     }
 
-    for (int i = 0; i < 1024; i++) {
+    for (var i = 0; i < 1024; i++) {
       _S_orig[i] = _SList[i];
     }
 
-    for (int i = 0; i < 128; i++) {
+    for (var i = 0; i < 128; i++) {
       _index_64[i] = _index_64List[i];
     }
 
-    for (int i = 0; i < 6; i++) {
+    for (var i = 0; i < 6; i++) {
       _bf_crypt_ciphertext[i] = _bf_crypt_ciphertextList[i];
     }
   }

@@ -4,4 +4,5 @@ description:  A port of JBCrypt to Dart
 author: Erlantz Oniga <erlantz8@gmail.com>
 
 dependencies:
-  unittest: { sdk: unittest }
+  unittest: any
+  benchmark_harness: any
