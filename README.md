@@ -22,6 +22,15 @@ not as good as in Java, but pretty good for a language that hasn't reached 1.0,
 in my computer it takes less than 1s to hash a password with the default number 
 of rounds.
 
+**NEW 2:** I've tried the same code in my laptop and in checked mode with debugging 
+enabled runs almost as fast as in production mode without debugging. It takes around 
+1s in both cases with the default number of rounds so it seems that the slow hashing 
+in checked mode with debugging enabled is a bug that affects my main computer. I'm 
+gonna try this same code in Windows to know if it's a problem with the support of 
+my CPU in Ubuntu 12.10 kernel, a Dart bug or something else. I have Arch Linux on 
+my laptop with the lattest stable kernel (3.7) while ubuntu 12.10 uses a patched 
+3.5
+
 **CAREFUL:** This library uses the random object of the math library which generates 
 pseudorandom bits and is not suitable for cryptographic purposes. In the future this 
 will be changed for a secure Random class  
