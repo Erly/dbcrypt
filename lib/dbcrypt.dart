@@ -16,6 +16,7 @@
 library dbcrypt;
 import 'dart:scalarlist';
 import 'dart:math';
+import 'dart:utf';
 
 /**
  * BCrypt implements OpenBSD-style Blowfish password hashing using
@@ -378,7 +379,6 @@ class DBCrypt {
    * @return  the hashed password
    */
   String hashpw(String password, String salt) {
-    DBCrypt B;
     String real_salt;
     Int8List passwordb, saltb, hashed;
     var minor = new String.fromCharCodes([0]);
@@ -403,7 +403,7 @@ class DBCrypt {
 
     real_salt = salt.substring(off + 3, off + 25);
     //try {
-      List charCodes = ("$password${(minor.charCodeAt(0) >= 'a'.charCodeAt(0) ? "\000" : "")}").charCodes;
+      List charCodes = encodeUtf8("$password${(minor.charCodeAt(0) >= 'a'.charCodeAt(0) ? '\u0000' : '')}");
       passwordb = new Int8List(charCodes.length);
       for (var i = 0; i < charCodes.length; i++) {
         passwordb[i] = charCodes[i];
@@ -414,8 +414,7 @@ class DBCrypt {
 
     saltb = _decode_base64(real_salt, _BCRYPT_SALT_LEN);
 
-    B = new DBCrypt();
-    hashed = B._crypt_raw(passwordb, saltb, rounds);
+    hashed = this._crypt_raw(passwordb, saltb, rounds);
 
     rs.add("\$2");
     if (minor.charCodeAt(0) >= 'a'.charCodeAt(0))
