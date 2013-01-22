@@ -94,7 +94,6 @@ main() {
 
   test('Gensalt with rounds', () {
     for (int i = 4; i <= 12; i++) {
-      print(" $i:");
       for (int j = 0; j < test_vectors.length; j += 4) {
         String plain = test_vectors[j][0];
         String salt = new DBCrypt().gensaltWithRounds(i);
