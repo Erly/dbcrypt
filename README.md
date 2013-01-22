@@ -10,7 +10,9 @@ as computers and Dart VM get faster.
 
 **CAREFUL:** This library uses the random object of the math library which generates 
 pseudorandom bits and is not suitable for cryptographic purposes. In the future this 
-will be changed for a secure Random class.  
+will be changed for a secure Random class.
+
+[![](https://drone.io/erly/dBCrypt/status.png)](https://drone.io/erly/dBCrypt/latest)  
 
 Installing
 -------------
