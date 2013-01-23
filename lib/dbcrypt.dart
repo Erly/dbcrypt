@@ -91,8 +91,8 @@ class DBCrypt {
   final Int8List _index_64 = new Int8List(128);
 
 // Expanded Blowfish key
-  List _P = new List(18);
-  List _S = new List(1024);
+  List _P = new List.fixedLength(18);
+  List _S = new List.fixedLength(1024);
 
   /**
    * Encode a byte array using bcrypt's slightly-modified base64
@@ -109,8 +109,9 @@ class DBCrypt {
     StringBuffer rs = new StringBuffer();
 
 
-    if (len <= 0 || len > d.length)
+    if (len <= 0 || len > d.length) {
       throw "Invalid len";
+    }
 
     while (off < len) {
       c1 = d[off++] & 0xff;
@@ -144,8 +145,9 @@ class DBCrypt {
    */
   int _char64(String x) {
     var charCode = x.charCodeAt(0);
-    if (charCode < 0 || charCode > _index_64.length)
+    if (charCode < 0 || charCode > _index_64.length) {
       return -1;
+    }
     return _index_64[x.charCodeAt(0)];
   }
 
@@ -163,27 +165,32 @@ class DBCrypt {
     var off = 0, slen = s.length, olen = 0, c1, c2, c3, c4, o;
     Int8List ret;
 
-    if (maxolen <= 0)
+    if (maxolen <= 0) {
       throw "Invalid maxolen";
+    }
 
     while (off < slen - 1 && olen < maxolen) {
       c1 = _char64(s[off++]);
       c2 = _char64(s[off++]);
-      if (c1 == -1 || c2 == -1)
+      if (c1 == -1 || c2 == -1) {
         break;
+      }
       o = (c1 << 2) as int;
       o |= (c2 & 0x30) >> 4;
       rs.add(new String.fromCharCodes([o]));
-      if (++olen >= maxolen || off >= slen)
+      if (++olen >= maxolen || off >= slen) {
         break;
+      }
       c3 = _char64(s[off++]);
-      if (c3 == -1)
+      if (c3 == -1) {
         break;
+      }
       o = ((c2 & 0x0f) << 4) as int;
       o |= (c3 & 0x3c) >> 2;
       rs.add(new String.fromCharCodes([o]));
-      if (++olen >= maxolen || off >= slen)
+      if (++olen >= maxolen || off >= slen) {
         break;
+      }
       c4 = _char64(s[off++]);
       o = ((c3 & 0x03) << 6) as int;
       o |= c4;
@@ -192,8 +199,9 @@ class DBCrypt {
     }
 
     ret = new Int8List(olen);
-    for (off = 0; off < olen; off++)
+    for (off = 0; off < olen; off++) {
       ret[off] = rs.toString().charCodes[off];
+    }
     return ret;
   }
 
@@ -270,8 +278,9 @@ class DBCrypt {
     Int32List lr = new Int32List(2);
     lr[0] = 0; lr[1] = 0;
 
-    for (i = 0; i < plen; i++)
+    for (i = 0; i < plen; i++) {
       _P[i] = _P[i] ^ _streamtoword(key, koffp);
+    }
 
     for (i = 0; i < plen; i += 2) {
       _encipher(lr, 0);
@@ -302,8 +311,9 @@ class DBCrypt {
     Int32List lr = new Int32List(2);
     lr[0] = 0; lr[1] = 0;
 
-    for (i = 0; i < plen; i++)
+    for (i = 0; i < plen; i++) {
       _P[i] = _P[i] ^ _streamtoword(key, koffp);
+    }
 
     for (i = 0; i < plen; i += 2) {
       lr[0] ^= _streamtoword(data, doffp);
@@ -340,11 +350,13 @@ class DBCrypt {
     var clen = cdata.length;
     Int8List ret;
 
-    if (log_rounds < 4 || log_rounds > 31)
+    if (log_rounds < 4 || log_rounds > 31) {
       throw "Bad number of rounds";
+    }
     rounds = 1 << log_rounds;
-    if (salt.length != _BCRYPT_SALT_LEN)
+    if (salt.length != _BCRYPT_SALT_LEN) {
       throw "Bad salt length";
+    }
 
     _init_key();
     _ekskey(salt, password);
@@ -357,8 +369,9 @@ class DBCrypt {
     }
 
     for (i = 0; i < 64; i++) {
-      for (j = 0; j < (clen >> 1); j++)
+      for (j = 0; j < (clen >> 1); j++) {
         _encipher(cdata, j << 1);
+      }
     }
 
     ret = new Int8List(clen * 4);
@@ -385,20 +398,23 @@ class DBCrypt {
     var rounds, off = 0;
     StringBuffer rs = new StringBuffer();
 
-    if (salt[0] != '\$' || salt[1] != '2')
+    if (salt[0] != '\$' || salt[1] != '2') {
       throw "Invalid salt version";
-    if (salt[2] == '\$')
+    }
+    if (salt[2] == '\$') {
       off = 3;
-    else {
+    } else {
       minor = salt[2];
-      if (minor != 'a' || salt[3] != '\$')
+      if (minor != 'a' || salt[3] != '\$') {
         throw "Invalid salt revision";
+      }
       off = 4;
     }
 
     // Extract number of rounds
-    if (salt[off + 2].charCodeAt(0) > '\$'.charCodeAt(0))
+    if (salt[off + 2].charCodeAt(0) > '\$'.charCodeAt(0)) {
       throw "Missing salt rounds";
+    }
     rounds = int.parse(salt.substring(off, off + 2));
 
     real_salt = salt.substring(off + 3, off + 25);
@@ -417,11 +433,13 @@ class DBCrypt {
     hashed = this._crypt_raw(passwordb, saltb, rounds);
 
     rs.add("\$2");
-    if (minor.charCodeAt(0) >= 'a'.charCodeAt(0))
+    if (minor.charCodeAt(0) >= 'a'.charCodeAt(0)) {
       rs.add(minor);
+    }
     rs.add("\$");
-    if (rounds < 10)
+    if (rounds < 10) {
       rs.add("0");
+    }
     rs.add(rounds.toString());
     rs.add("\$");
     rs.add(_encode_base64(saltb, saltb.length));
@@ -447,8 +465,9 @@ class DBCrypt {
     }
 
     rs.add("\$2a\$");
-    if (log_rounds < 10)
+    if (log_rounds < 10) {
       rs.add("0");
+    }
     rs.add(log_rounds.toString());
     rs.add("\$");
     rs.add(_encode_base64(rnd, rnd.length));
