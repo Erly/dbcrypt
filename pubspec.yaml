@@ -1,8 +1,10 @@
 name:  dbcrypt
-version: 0.0.1
+version: 0.1.0
 description:  A port of JBCrypt to Dart
 author: Erlantz Oniga <erlantz8@gmail.com>
 
 dependencies:
   unittest: any
   benchmark_harness: any
+  drandom:
+    git: https://github.com/Erly/DRandom.git

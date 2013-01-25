@@ -15,8 +15,8 @@
 
 library dbcrypt;
 import 'dart:scalarlist';
-import 'dart:math';
 import 'dart:utf';
+import 'package:drandom/drandom.dart';
 
 /**
  * BCrypt implements OpenBSD-style Blowfish password hashing using
@@ -456,12 +456,12 @@ class DBCrypt {
    * @param random    an instance of SecureRandom to use
    * @return  an encoded salt value
    */
-  String gensaltWithRoundsAndRandom(int log_rounds, Random random) {
+  String gensaltWithRoundsAndRandom(int log_rounds, DRandom random) {
     StringBuffer rs = new StringBuffer();
     Int8List rnd = new Int8List(_BCRYPT_SALT_LEN);
 
     for (var i = 0; i < _BCRYPT_SALT_LEN; i++) {
-      rnd[i] = random.nextInt(256) - 128;
+      rnd[i] = random.NextFromMax(256) - 128;
     }
 
     rs.add("\$2a\$");
@@ -482,7 +482,7 @@ class DBCrypt {
    * @return  an encoded salt value
    */
   String gensaltWithRounds(int log_rounds) {
-    return gensaltWithRoundsAndRandom(log_rounds, new Random());
+    return gensaltWithRoundsAndRandom(log_rounds, new DRandom());
   }
 
   /**
