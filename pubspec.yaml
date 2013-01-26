@@ -6,6 +6,6 @@ description:  A port of JBCrypt to Dart
 
 dependencies:
   unittest: any
-  benchmark_harness: any
+  benchmark_harness: ">=1.0.2 <2.0.0"
   drandom:
     git: https://github.com/Erly/DRandom.git
