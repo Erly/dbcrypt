@@ -106,24 +106,24 @@ class DBCrypt {
 
     while (off < len) {
       c1 = d[off++] & 0xff;
-      rs.add(_base64_code[(c1 >> 2) & 0x3f]);
+      rs.write(_base64_code[(c1 >> 2) & 0x3f]);
       c1 = (c1 & 0x03) << 4;
       if (off >= len) {
-        rs.add(_base64_code[c1 & 0x3f]);
+        rs.write(_base64_code[c1 & 0x3f]);
         break;
       }
       c2 = d[off++] & 0xff;
       c1 |= (c2 >> 4) & 0x0f;
-      rs.add(_base64_code[c1 & 0x3f]);
+      rs.write(_base64_code[c1 & 0x3f]);
       c1 = (c2 & 0x0f) << 2;
       if (off >= len) {
-        rs.add(_base64_code[c1 & 0x3f]);
+        rs.write(_base64_code[c1 & 0x3f]);
         break;
       }
       c2 = d[off++] & 0xff;
       c1 |= (c2 >> 6) & 0x03;
-      rs.add(_base64_code[c1 & 0x3f]);
-      rs.add(_base64_code[c2 & 0x3f]);
+      rs.write(_base64_code[c1 & 0x3f]);
+      rs.write(_base64_code[c2 & 0x3f]);
     }
     return rs.toString();
   }
@@ -135,11 +135,11 @@ class DBCrypt {
    * Returns the decoded value of x
    */
   int _char64(String x) {
-    var charCode = x.charCodeAt(0);
+    var charCode = x.charCodes[0];
     if (charCode < 0 || charCode > _index_64.length) {
       return -1;
     }
-    return _index_64[x.charCodeAt(0)];
+    return _index_64[x.charCodes[0]];
   }
 
   /**
@@ -166,7 +166,7 @@ class DBCrypt {
       }
       o = (c1 << 2) as int;
       o |= (c2 & 0x30) >> 4;
-      rs.add(new String.fromCharCodes([o]));
+      rs.write(new String.fromCharCodes([o]));
       if (++olen >= maxolen || off >= slen) {
         break;
       }
@@ -176,14 +176,14 @@ class DBCrypt {
       }
       o = ((c2 & 0x0f) << 4) as int;
       o |= (c3 & 0x3c) >> 2;
-      rs.add(new String.fromCharCodes([o]));
+      rs.write(new String.fromCharCodes([o]));
       if (++olen >= maxolen || off >= slen) {
         break;
       }
       c4 = _char64(s[off++]);
       o = ((c3 & 0x03) << 6) as int;
       o |= c4;
-      rs.add(new String.fromCharCodes([o]));
+      rs.write(new String.fromCharCodes([o]));
       ++olen;
     }
 
@@ -386,14 +386,14 @@ class DBCrypt {
     }
 
     // Extract number of rounds
-    if (salt[off + 2].charCodeAt(0) > '\$'.charCodeAt(0)) {
+    if (salt[off + 2].charCodes[0] > '\$'.charCodes[0]) {
       throw "Missing salt rounds";
     }
     rounds = int.parse(salt.substring(off, off + 2));
 
     real_salt = salt.substring(off + 3, off + 25);
     //try {
-      List charCodes = encodeUtf8("$password${(minor.charCodeAt(0) >= 'a'.charCodeAt(0) ? '\u0000' : '')}");
+      List charCodes = encodeUtf8("$password${(minor.charCodes[0] >= 'a'.charCodes[0] ? '\u0000' : '')}");
       passwordb = new Int8List(charCodes.length);
       for (var i = 0; i < charCodes.length; i++) {
         passwordb[i] = charCodes[i];
@@ -406,18 +406,18 @@ class DBCrypt {
 
     hashed = this._crypt_raw(passwordb, saltb, rounds);
 
-    rs.add("\$2");
-    if (minor.charCodeAt(0) >= 'a'.charCodeAt(0)) {
-      rs.add(minor);
+    rs.write("\$2");
+    if (minor.charCodes[0] >= 'a'.charCodes[0]) {
+      rs.write(minor);
     }
-    rs.add("\$");
+    rs.write("\$");
     if (rounds < 10) {
-      rs.add("0");
+      rs.write("0");
     }
-    rs.add(rounds.toString());
-    rs.add("\$");
-    rs.add(_encode_base64(saltb, saltb.length));
-    rs.add(_encode_base64(hashed,
+    rs.write(rounds.toString());
+    rs.write("\$");
+    rs.write(_encode_base64(saltb, saltb.length));
+    rs.write(_encode_base64(hashed,
         _bf_crypt_ciphertext.length * 4 - 1));
     return rs.toString();
   }
@@ -435,13 +435,13 @@ class DBCrypt {
       rnd[i] = random.NextFromMax(256) - 128;
     }
 
-    rs.add("\$2a\$");
+    rs.write("\$2a\$");
     if (log_rounds < 10) {
-      rs.add("0");
+      rs.write("0");
     }
-    rs.add(log_rounds.toString());
-    rs.add("\$");
-    rs.add(_encode_base64(rnd, rnd.length));
+    rs.write(log_rounds.toString());
+    rs.write("\$");
+    rs.write(_encode_base64(rnd, rnd.length));
     return rs.toString();
   }
 
