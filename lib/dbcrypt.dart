@@ -135,11 +135,11 @@ class DBCrypt {
    * Returns the decoded value of x
    */
   int _char64(String x) {
-    var charCode = x.charCodes[0];
+    var charCode = x.codeUnitAt(0);
     if (charCode < 0 || charCode > _index_64.length) {
       return -1;
     }
-    return _index_64[x.charCodes[0]];
+    return _index_64[x.codeUnitAt(0)];
   }
 
   /**
@@ -189,7 +189,7 @@ class DBCrypt {
 
     ret = new Int8List(olen);
     for (off = 0; off < olen; off++) {
-      ret[off] = rs.toString().charCodes[off];
+      ret[off] = rs.toString().codeUnitAt(off);
     }
     return ret;
   }
@@ -386,14 +386,14 @@ class DBCrypt {
     }
 
     // Extract number of rounds
-    if (salt[off + 2].charCodes[0] > '\$'.charCodes[0]) {
+    if (salt[off + 2].codeUnitAt(0) > '\$'.codeUnitAt(0)) {
       throw "Missing salt rounds";
     }
     rounds = int.parse(salt.substring(off, off + 2));
 
     real_salt = salt.substring(off + 3, off + 25);
     //try {
-      List charCodes = encodeUtf8("$password${(minor.charCodes[0] >= 'a'.charCodes[0] ? '\u0000' : '')}");
+      List charCodes = encodeUtf8("$password${(minor.codeUnitAt(0) >= 'a'.codeUnitAt(0) ? '\u0000' : '')}");
       passwordb = new Int8List(charCodes.length);
       for (var i = 0; i < charCodes.length; i++) {
         passwordb[i] = charCodes[i];
@@ -407,7 +407,7 @@ class DBCrypt {
     hashed = this._crypt_raw(passwordb, saltb, rounds);
 
     rs.write("\$2");
-    if (minor.charCodes[0] >= 'a'.charCodes[0]) {
+    if (minor.codeUnitAt(0) >= 'a'.codeUnitAt(0)) {
       rs.write(minor);
     }
     rs.write("\$");

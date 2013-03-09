@@ -1,5 +1,5 @@
 name: dbcrypt
-version: 0.1.1
+version: 0.1.2
 author: Erlantz Oniga <erlantz8@gmail.com>
 description: A port of JBCrypt to Dart
 homepage: https://github.com/Erly/dbcrypt
