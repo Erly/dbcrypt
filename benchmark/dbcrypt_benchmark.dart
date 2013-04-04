@@ -1,5 +1,6 @@
-import 'package:dbcrypt/dbcrypt.dart';
+library dbcrypt_benchmark;
 
+import 'package:dbcrypt/dbcrypt.dart';
 import 'package:benchmark_harness/benchmark_harness.dart';
 
 class DBCryptBenchmark extends BenchmarkBase {

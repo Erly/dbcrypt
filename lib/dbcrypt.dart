@@ -14,7 +14,7 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 library dbcrypt;
-import 'dart:scalarlist';
+import 'dart:typeddata';
 import 'dart:utf';
 import 'package:drandom/drandom.dart';
 
@@ -85,8 +85,8 @@ class DBCrypt {
   final Int8List _index_64 = new Int8List(128);
 
 // Expanded Blowfish key
-  List _P = new List.fixedLength(18);
-  List _S = new List.fixedLength(1024);
+  List _P = new List(18);
+  List _S = new List(1024);
 
   /**
    * Encode a byte array using bcrypt's slightly-modified base64 encoding scheme.
@@ -247,8 +247,8 @@ class DBCrypt {
     for (var i = 0; i < _S_orig.length; i++) {
       _S[i] = _S_orig[i];
     }*/
-    _P = _P_orig.getRange(0, _P_orig.length);
-    _S = _S_orig.getRange(0, _S_orig.length);
+    _P = _P_orig.sublist(0, _P_orig.length);
+    _S = _S_orig.sublist(0, _S_orig.length);
   }
 
   /**
