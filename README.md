@@ -8,9 +8,6 @@ cipher with modifications designed to raise the cost of off-line password cracki
 The computation cost of the algorithm is parameterised, so it can be increased 
 as computers and Dart VM get faster.
 
-**WARNING:** This library is server-only (for now) because it uses the scalarlib 
-library for better performance.
-
 [![](https://drone.io/erly/dBCrypt/status.png)](https://drone.io/erly/dBCrypt/latest)  
 
 Installation

@@ -14,7 +14,7 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 library dbcrypt;
-import 'dart:typeddata';
+import 'dart:typed_data';
 import 'dart:utf';
 import 'package:drandom/drandom.dart';
 
