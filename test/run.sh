@@ -10,8 +10,7 @@ DIR=$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd )
 echo $DIR/..
 pushd $DIR/..
 echo Analyzing library for warnings or type errors
-dartanalyzer --fatal-warnings --fatal-type-errors lib/dbcrypt.dart --work analyzer_out
-rm -r analyzer_out
-popd
+dartanalyzer --fatal-warnings --fatal-type-errors lib/dbcrypt.dart
+popd > /dev/null
 
 dart --checked $DIR/dbcrypt_test.dart
