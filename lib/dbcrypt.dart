@@ -15,7 +15,7 @@
 
 library dbcrypt;
 import 'dart:typed_data';
-import 'dart:utf';
+import 'dart:convert';
 import 'package:drandom/drandom.dart';
 
 /**
@@ -393,7 +393,7 @@ class DBCrypt {
 
     real_salt = salt.substring(off + 3, off + 25);
     //try {
-      List charCodes = encodeUtf8("$password${(minor.codeUnitAt(0) >= 'a'.codeUnitAt(0) ? '\u0000' : '')}");
+      List charCodes = UTF8.encode("$password${(minor.codeUnitAt(0) >= 'a'.codeUnitAt(0) ? '\u0000' : '')}");
       passwordb = new Int8List(charCodes.length);
       for (var i = 0; i < charCodes.length; i++) {
         passwordb[i] = charCodes[i];
