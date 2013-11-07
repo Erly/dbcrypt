@@ -14,8 +14,8 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 library dbcrypt;
+import 'dart:convert';
 import 'dart:typed_data';
-import 'dart:utf';
 import 'package:drandom/drandom.dart';
 
 /**
@@ -393,7 +393,7 @@ class DBCrypt {
 
     real_salt = salt.substring(off + 3, off + 25);
     //try {
-      List charCodes = encodeUtf8("$password${(minor.codeUnitAt(0) >= 'a'.codeUnitAt(0) ? '\u0000' : '')}");
+      List charCodes = new Utf8Encoder().convert("$password${(minor.codeUnitAt(0) >= 'a'.codeUnitAt(0) ? '\u0000' : '')}");
       passwordb = new Int8List(charCodes.length);
       for (var i = 0; i < charCodes.length; i++) {
         passwordb[i] = charCodes[i];

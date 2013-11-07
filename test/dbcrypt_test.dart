@@ -137,7 +137,6 @@ main() {
 
     String h1 = new DBCrypt().hashpw(pw1, new DBCrypt().gensalt());
     expect(false, new DBCrypt().checkpw(pw2, h1));
-    print(".");
 
     String h2 = new DBCrypt().hashpw(pw2, new DBCrypt().gensalt());
     expect(false, new DBCrypt().checkpw(pw1, h2));
