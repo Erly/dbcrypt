@@ -2,3 +2,8 @@ packages
 pubspec.lock
 .project
 tags
+.settings
+.DS_Store
+**/*.dart.js*
+.buildlog
+out/
