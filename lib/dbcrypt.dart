@@ -451,7 +451,7 @@ class DBCrypt {
    * Returns an encoded salt value
    */
   String gensaltWithRounds(int log_rounds) {
-    return gensaltWithRoundsAndRandom(log_rounds, new DRandom());
+    return gensaltWithRoundsAndRandom(log_rounds, new DRandom.withSeed(new DateTime.now().millisecondsSinceEpoch));
   }
 
   /**
