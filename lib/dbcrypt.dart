@@ -152,7 +152,7 @@ class DBCrypt {
   Int8List _decode_base64(String s, int maxolen) {
     StringBuffer rs = new StringBuffer();
     int off = 0, slen = s.length, olen = 0;
-    int c1, c2, c3, c4, o; // TODO: They are bytes try to use something a bit more performant than int
+    int c1, c2, c3, c4, o;
     Int8List ret;
 
     if (maxolen <= 0) {
@@ -757,8 +757,7 @@ class DBCrypt {
                   0xb74e6132, 0xce77e25b, 0x578fdfe3, 0x3ac372e6
                   ];
 
-    // TODO: They are bytes
-    List<int> _index_64List = [
+    Int8List _index_64List = new Int8List.fromList([
                         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -772,7 +771,7 @@ class DBCrypt {
                         31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
                         41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
                         51, 52, 53, -1, -1, -1, -1, -1
-                        ];
+                        ]);
 
     List<int> _bf_crypt_ciphertextList = [
                                     0x4f727068, 0x65616e42, 0x65686f6c,
