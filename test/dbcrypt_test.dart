@@ -1,9 +1,9 @@
 library dbcrypt_test;
 
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 import 'package:dbcrypt/dbcrypt.dart';
 
-main() {
+void main() {
   /*String hashedPassword;
   test('Hash a password', () {
     int t1 = new Date.now().millisecondsSinceEpoch;

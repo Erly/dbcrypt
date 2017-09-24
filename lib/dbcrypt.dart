@@ -15,8 +15,8 @@
 
 library dbcrypt;
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
-import 'package:drandom/drandom.dart';
 
 /**
  * BCrypt implements OpenBSD-style Blowfish password hashing using
@@ -72,7 +72,7 @@ class DBCrypt {
   final Int32List _bf_crypt_ciphertext = new Int32List(6);
 
   // Table for Base64 encoding
-  final List _base64_code = [
+  final List _base64_code = <String>[
     '.', '/', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
     'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
     'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
@@ -85,8 +85,8 @@ class DBCrypt {
   final Int8List _index_64 = new Int8List(128);
 
 // Expanded Blowfish key
-  List _P = new List(18);
-  List _S = new List(1024);
+  List<int> _P = new List<int>(18);
+  List<int> _S = new List<int>(1024);
 
   /**
    * Encode a byte array using bcrypt's slightly-modified base64 encoding scheme.
@@ -96,7 +96,7 @@ class DBCrypt {
    * Returns a base64-encoded string.
    */
   String _encode_base64(Int8List d, int len) {
-    var off = 0, c1, c2;
+    int off = 0, c1, c2;
     StringBuffer rs = new StringBuffer();
 
 
@@ -149,9 +149,10 @@ class DBCrypt {
    *
    * Returns an array containing the decoded bytes.
    */
-  Int8List _decode_base64(String s, var maxolen) {
+  Int8List _decode_base64(String s, int maxolen) {
     StringBuffer rs = new StringBuffer();
-    var off = 0, slen = s.length, olen = 0, c1, c2, c3, c4, o;
+    int off = 0, slen = s.length, olen = 0;
+    int c1, c2, c3, c4, o; // TODO: They are bytes try to use something a bit more performant than int
     Int8List ret;
 
     if (maxolen <= 0) {
@@ -164,7 +165,7 @@ class DBCrypt {
       if (c1 == -1 || c2 == -1) {
         break;
       }
-      o = (c1 << 2) as int;
+      o = (c1 << 2);
       o |= (c2 & 0x30) >> 4;
       rs.write(new String.fromCharCodes([o]));
       if (++olen >= maxolen || off >= slen) {
@@ -174,14 +175,14 @@ class DBCrypt {
       if (c3 == -1) {
         break;
       }
-      o = ((c2 & 0x0f) << 4) as int;
+      o = ((c2 & 0x0f) << 4);
       o |= (c3 & 0x3c) >> 2;
       rs.write(new String.fromCharCodes([o]));
       if (++olen >= maxolen || off >= slen) {
         break;
       }
       c4 = _char64(s[off++]);
-      o = ((c3 & 0x03) << 6) as int;
+      o = ((c3 & 0x03) << 6);
       o |= c4;
       rs.write(new String.fromCharCodes([o]));
       ++olen;
@@ -197,8 +198,8 @@ class DBCrypt {
   /**
    * Blowfish encipher a single 64-bit block encoded as two 32-bit halves.
    */
-  _encipher(Int32List lr, var off) {
-    var i, n, l = lr[off], r = lr[off + 1];
+  void _encipher(Int32List lr, int off) {
+    int i, n, l = lr[off], r = lr[off + 1];
 
     l ^= _P[0];
     for (i = 0; i <= _BLOWFISH_NUM_ROUNDS - 2;) {
@@ -226,7 +227,7 @@ class DBCrypt {
    * Returns the next word of material from data.
    */
   int _streamtoword(Int8List data, Int32List offp) {
-    var i, word = 0, off = offp[0];
+    int i, word = 0, off = offp[0];
 
     for (i = 0; i < 4; i++) {
       word = (word << 8) | (data[off] & 0xff);
@@ -240,7 +241,7 @@ class DBCrypt {
   /**
    * Initialise the Blowfish key schedule.
    */
-  _init_key() {
+  void _init_key() {
     /*for (var i = 0; i < _P_orig.length; i++) {
       _P[i] = _P_orig[i];
     }
@@ -254,8 +255,8 @@ class DBCrypt {
   /**
    * Key the Blowfish cipher.
    */
-  _key(Int8List key) {
-    var i, plen = _P.length, slen = _S.length;;
+  void _key(Int8List key) {
+    int i, plen = _P.length, slen = _S.length;;
     Int32List koffp = new Int32List(1);
     koffp[0] = 0;
     Int32List lr = new Int32List(2);
@@ -282,8 +283,8 @@ class DBCrypt {
    * Perform the "enhanced key schedule" step described by
    * Provos and Mazieres in ["A Future-Adaptable Password Scheme"](http://www.openbsd.org/papers/bcrypt-paper.ps)
    */
-  _ekskey(Int8List data, Int8List key) {
-    var i, plen = _P.length, slen = _S.length;;
+  void _ekskey(Int8List data, Int8List key) {
+    int i, plen = _P.length, slen = _S.length;;
     Int32List koffp = new Int32List(1);
     koffp[0] = 0;
     Int32List doffp = new Int32List(1);
@@ -318,7 +319,7 @@ class DBCrypt {
    * Returns an array containing the binary hashed password
    */
   Int8List _crypt_raw(Int8List password, Int8List salt, int log_rounds) {
-    var rounds, i, j;
+    int rounds, i, j;
     Int32List cdata = new Int32List(_bf_crypt_ciphertext.length);
     for (int i = 0; i < _bf_crypt_ciphertext.length; i++) {
       cdata[i] = _bf_crypt_ciphertext[i];
@@ -368,8 +369,8 @@ class DBCrypt {
   String hashpw(String password, String salt) {
     String real_salt;
     Int8List passwordb, saltb, hashed;
-    var minor = new String.fromCharCodes([0]);
-    var rounds, off = 0;
+    String minor = new String.fromCharCodes([0]);
+    int rounds, off = 0;
     StringBuffer rs = new StringBuffer();
 
     if (salt[0] != '\$' || salt[1] != '2') {
@@ -393,7 +394,7 @@ class DBCrypt {
 
     real_salt = salt.substring(off + 3, off + 25);
     //try {
-      List charCodes = new Utf8Encoder().convert("$password${(minor.codeUnitAt(0) >= 'a'.codeUnitAt(0) ? '\u0000' : '')}");
+      List<int> charCodes = new Utf8Encoder().convert("$password${(minor.codeUnitAt(0) >= 'a'.codeUnitAt(0) ? '\u0000' : '')}");
       passwordb = new Int8List(charCodes.length);
       for (var i = 0; i < charCodes.length; i++) {
         passwordb[i] = charCodes[i];
@@ -427,12 +428,12 @@ class DBCrypt {
    *
    * Returns an encoded salt value
    */
-  String gensaltWithRoundsAndRandom(int log_rounds, DRandom random) {
+  String gensaltWithRoundsAndRandom(int log_rounds, Random random) {
     StringBuffer rs = new StringBuffer();
     Int8List rnd = new Int8List(_BCRYPT_SALT_LEN);
 
     for (var i = 0; i < _BCRYPT_SALT_LEN; i++) {
-      rnd[i] = random.NextFromMax(256) - 128;
+      rnd[i] = random.nextInt(256) - 128;
     }
 
     rs.write("\$2a\$");
@@ -451,7 +452,7 @@ class DBCrypt {
    * Returns an encoded salt value
    */
   String gensaltWithRounds(int log_rounds) {
-    return gensaltWithRoundsAndRandom(log_rounds, new DRandom.withSeed(new DateTime.now().millisecondsSinceEpoch));
+    return gensaltWithRoundsAndRandom(log_rounds, new Random.secure());
   }
 
   /**
@@ -489,7 +490,7 @@ class DBCrypt {
    * The default constructor. Initializes the lists necessary for using [DBCrypt]
    */
   DBCrypt._defaultConstructor() {
-    List _PList = [
+    List<int> _PList = [
               0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344,
               0xa4093822, 0x299f31d0, 0x082efa98, 0xec4e6c89,
               0x452821e6, 0x38d01377, 0xbe5466cf, 0x34e90c6c,
@@ -497,7 +498,7 @@ class DBCrypt {
               0x9216d5d9, 0x8979fb1b
               ];
 
-    List _SList = [
+    List<int> _SList = [
                   0xd1310ba6, 0x98dfb5ac, 0x2ffd72db, 0xd01adfb7,
                   0xb8e1afed, 0x6a267e96, 0xba7c9045, 0xf12c7f99,
                   0x24a19947, 0xb3916cf7, 0x0801f2e2, 0x858efc16,
@@ -756,7 +757,8 @@ class DBCrypt {
                   0xb74e6132, 0xce77e25b, 0x578fdfe3, 0x3ac372e6
                   ];
 
-    List _index_64List = [
+    // TODO: They are bytes
+    List<int> _index_64List = [
                         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -772,7 +774,7 @@ class DBCrypt {
                         51, 52, 53, -1, -1, -1, -1, -1
                         ];
 
-    List _bf_crypt_ciphertextList = [
+    List<int> _bf_crypt_ciphertextList = [
                                     0x4f727068, 0x65616e42, 0x65686f6c,
                                     0x64657253, 0x63727944, 0x6f756274
                                     ];

@@ -15,6 +15,6 @@ class DBCryptBenchmark extends BenchmarkBase {
   }
 }
 
-main() {
+void main() {
   DBCryptBenchmark.main();
 }

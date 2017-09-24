@@ -1,12 +1,10 @@
 name: dbcrypt
-version: 0.2.1
+version: 1.0.0-alpha
 author: Erlantz Oniga <erlantz8@gmail.com>
 description: A port of jBCrypt to Dart
 homepage: https://github.com/Erly/dbcrypt
 environment:
-  sdk: '>=0.8.10+6 <2.0.0'
-dependencies:
-  drandom: '>=0.0.3 <0.1.0'
+  sdk: '>=1.24.0 <3.0.0'
 dev_dependencies:
   benchmark_harness: '>=1.0.2 <2.0.0'
-  unittest: '>=0.9.0 <0.10.0'
+  test: '^0.12.0'
