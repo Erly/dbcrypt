@@ -3,11 +3,11 @@ library dbcrypt_benchmark;
 import 'package:dbcrypt/dbcrypt.dart';
 import 'package:benchmark_harness/benchmark_harness.dart';
 
-class DBCryptBenchmark extends BenchmarkBase {
-  const DBCryptBenchmark() : super("DBCrypt");
+class HashPasswordBenchmark extends BenchmarkBase {
+  const HashPasswordBenchmark() : super("Hash Password");
 
   static void main() {
-    new DBCryptBenchmark().report();
+    new HashPasswordBenchmark().report();
   }
 
   void run() {
@@ -15,6 +15,32 @@ class DBCryptBenchmark extends BenchmarkBase {
   }
 }
 
+class CheckPasswordBenchmark extends BenchmarkBase {
+  const CheckPasswordBenchmark(int numRounds) : super("Check Password $numRounds rounds");
+
+  static int _numRounds;
+  static String _hashedPassword;
+
+
+  static void main(int numRounds) {
+    _numRounds = numRounds;
+    new CheckPasswordBenchmark(numRounds).report();
+  }
+
+  void setup() {
+    _hashedPassword = new DBCrypt().hashpw('patata', new DBCrypt().gensaltWithRounds(_numRounds));
+  }
+
+  void run() {
+    new DBCrypt().checkpw('patata', _hashedPassword);
+  }
+}
+
 void main() {
-  DBCryptBenchmark.main();
+  HashPasswordBenchmark.main();
+  CheckPasswordBenchmark.main(10);
+  CheckPasswordBenchmark.main(11);
+  CheckPasswordBenchmark.main(12);
+  CheckPasswordBenchmark.main(13);
+  CheckPasswordBenchmark.main(14);
 }
