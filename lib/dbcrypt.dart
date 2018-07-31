@@ -541,7 +541,7 @@ class DBCrypt {
   }
 
   ///
-  /// Cycically extract a word of key material.
+  /// Cyclically extract a word of key material.
   ///
   /// Returns the next word of material from data.
   ///
@@ -657,11 +657,8 @@ class DBCrypt {
     _init_key();
     _ekskey(salt, password);
     for (i = 0; i < rounds; i++) {
-      //var t1 = new Date.now().millisecondsSinceEpoch;
       _key(password);
       _key(salt);
-      //var t2 = new Date.now().millisecondsSinceEpoch;
-      //print('$i/$rounds: ${t2-t1} miliseconds');
     }
 
     for (i = 0; i < 64; i++) {

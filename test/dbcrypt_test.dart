@@ -4,21 +4,6 @@ import 'package:test/test.dart';
 import 'package:dbcrypt/dbcrypt.dart';
 
 void main() {
-  /*String hashedPassword;
-  test('Hash a password', () {
-    int t1 = new Date.now().millisecondsSinceEpoch;
-    hashedPassword = new DBCrypt().hashpw('patata', new DBCrypt().gensalt());
-    int t2 = new Date.now().millisecondsSinceEpoch;
-    print('It took \${(t2-t1)/1000} seconds to hash the password');
-    print('hashed password: \$hashedPassword');
-  });
-  test('Check password', () {
-    int t1 = new Date.now().millisecondsSinceEpoch;
-    expect(true, new DBCrypt().checkpw('patata', hashedPassword));
-    int t2 = new Date.now().millisecondsSinceEpoch;
-    print('It took \${(t2-t1)/1000} seconds to check the password');
-  });*/
-
   List<List<String>> test_vectors = [
     [ "",
     "\$2a\$06\$DCq7YPn5Rq63x1Lad4cll.",
@@ -80,6 +65,18 @@ void main() {
     [ "~!@#\$%^&*()      ~!@#\$%^&*()PNBFRD",
     "\$2a\$12\$WApznUOJfkEGSmYRfnkrPO",
     "\$2a\$12\$WApznUOJfkEGSmYRfnkrPOr466oFDCaj4b6HY3EXGvfxm43seyhgC" ],
+    [ "~!@#\$%^&*()      ~!@#\$%^&*()PNBFRD",
+    "\$2\$08\$Eq2r4G/76Wv39MzSX262hu",
+    "\$2\$08\$Eq2r4G/76Wv39MzSX262huzfMCAMMgc/VL3jEk8zd28SB.d66B7N6" ],
+    [ "~!@#\$%^&*()      ~!@#\$%^&*()PNBFRD",
+    "\$2x\$08\$Eq2r4G/76Wv39MzSX262hu",
+    "\$2x\$08\$Eq2r4G/76Wv39MzSX262huzPz612MZiYHVUJe/OcOql2jo4.9UxTW" ],
+    [ "~!@#\$%^&*()      ~!@#\$%^&*()PNBFRD",
+    "\$2y\$08\$Eq2r4G/76Wv39MzSX262hu",
+    "\$2y\$08\$Eq2r4G/76Wv39MzSX262huzPz612MZiYHVUJe/OcOql2jo4.9UxTW" ],
+    [ "~!@#\$%^&*()      ~!@#\$%^&*()PNBFRD",
+    "\$2b\$08\$Eq2r4G/76Wv39MzSX262hu",
+    "\$2b\$08\$Eq2r4G/76Wv39MzSX262huzPz612MZiYHVUJe/OcOql2jo4.9UxTW" ],
   ];
 
   test('Hash password', () {
@@ -94,7 +91,7 @@ void main() {
 
   test('Gensalt with rounds', () {
     for (int i = 4; i <= 12; i++) {
-      for (int j = 0; j < test_vectors.length; j += 4) {
+      for (int j = 0; j < test_vectors.length - 4; j += 4) {
         String plain = test_vectors[j][0];
         String salt = new DBCrypt().gensaltWithRounds(i);
         String hashed1 = new DBCrypt().hashpw(plain, salt);
@@ -105,7 +102,7 @@ void main() {
   });
 
   test('Gensalt', () {
-    for (int i = 0; i < test_vectors.length; i += 4) {
+    for (int i = 0; i < test_vectors.length - 4; i += 4) {
       String plain = test_vectors[i][0];
       String salt = new DBCrypt().gensalt();
       String hashed1 = new DBCrypt().hashpw(plain, salt);
@@ -124,7 +121,7 @@ void main() {
 
   test('Checkpw failure', () {
     for (int i = 0; i < test_vectors.length; i++) {
-      int broken_index = (i + 4) % test_vectors.length;
+      int broken_index = (i + 8) % test_vectors.length;
       String plain = test_vectors[i][0];
       String expected = test_vectors[broken_index][2];
       expect(new DBCrypt().checkpw(plain, expected), false);
