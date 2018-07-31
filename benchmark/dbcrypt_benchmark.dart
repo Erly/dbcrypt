@@ -10,6 +10,7 @@ class HashPasswordBenchmark extends BenchmarkBase {
     new HashPasswordBenchmark().report();
   }
 
+  @override
   void run() {
     new DBCrypt().hashpw('patata', new DBCrypt().gensalt());
   }
@@ -27,10 +28,12 @@ class CheckPasswordBenchmark extends BenchmarkBase {
     new CheckPasswordBenchmark(numRounds).report();
   }
 
+  @override
   void setup() {
     _hashedPassword = new DBCrypt().hashpw('patata', new DBCrypt().gensaltWithRounds(_numRounds));
   }
 
+  @override
   void run() {
     new DBCrypt().checkpw('patata', _hashedPassword);
   }
