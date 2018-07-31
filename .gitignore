@@ -5,6 +5,7 @@ pubspec.lock
 .packages
 .project
 .pub/
+.dart_tool
 doc/api/
 
 *.iml
