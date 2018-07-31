@@ -1658,8 +1658,7 @@ class DBCrypt {
       off = 3;
     } else {
       minor = salt[2];
-      if ((minor != 'a' && minor != 'b' && minor != 'x' && minor != 'y') ||
-          salt[3] != '\$') {
+      if ((minor != 'a' && minor != 'b' && minor != 'y') || salt[3] != '\$') {
         throw "Invalid salt revision";
       }
       off = 4;

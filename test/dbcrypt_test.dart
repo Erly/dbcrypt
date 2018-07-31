@@ -112,11 +112,6 @@ void main() {
     ],
     [
       "~!@#\$%^&*()      ~!@#\$%^&*()PNBFRD",
-      "\$2x\$08\$Eq2r4G/76Wv39MzSX262hu",
-      "\$2x\$08\$Eq2r4G/76Wv39MzSX262huzPz612MZiYHVUJe/OcOql2jo4.9UxTW"
-    ],
-    [
-      "~!@#\$%^&*()      ~!@#\$%^&*()PNBFRD",
       "\$2y\$08\$Eq2r4G/76Wv39MzSX262hu",
       "\$2y\$08\$Eq2r4G/76Wv39MzSX262huzPz612MZiYHVUJe/OcOql2jo4.9UxTW"
     ],
@@ -139,7 +134,7 @@ void main() {
 
   test('Gensalt with rounds', () {
     for (int i = 4; i <= 12; i++) {
-      for (int j = 0; j < test_vectors.length - 4; j += 4) {
+      for (int j = 0; j < test_vectors.length - 3; j += 4) {
         String plain = test_vectors[j][0];
         String salt = new DBCrypt().gensaltWithRounds(i);
         String hashed1 = new DBCrypt().hashpw(plain, salt);
@@ -169,7 +164,7 @@ void main() {
 
   test('Checkpw failure', () {
     for (int i = 0; i < test_vectors.length; i++) {
-      int broken_index = (i + 8) % test_vectors.length;
+      int broken_index = (i + 7) % test_vectors.length;
       String plain = test_vectors[i][0];
       String expected = test_vectors[broken_index][2];
       expect(new DBCrypt().checkpw(plain, expected), false);
