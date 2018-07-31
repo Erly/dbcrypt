@@ -17,11 +17,11 @@ class HashPasswordBenchmark extends BenchmarkBase {
 }
 
 class CheckPasswordBenchmark extends BenchmarkBase {
-  const CheckPasswordBenchmark(int numRounds) : super("Check Password $numRounds rounds");
+  const CheckPasswordBenchmark(int numRounds)
+      : super("Check Password $numRounds rounds");
 
   static int _numRounds;
   static String _hashedPassword;
-
 
   static void main(int numRounds) {
     _numRounds = numRounds;
@@ -30,7 +30,8 @@ class CheckPasswordBenchmark extends BenchmarkBase {
 
   @override
   void setup() {
-    _hashedPassword = new DBCrypt().hashpw('patata', new DBCrypt().gensaltWithRounds(_numRounds));
+    _hashedPassword = new DBCrypt()
+        .hashpw('patata', new DBCrypt().gensaltWithRounds(_numRounds));
   }
 
   @override
