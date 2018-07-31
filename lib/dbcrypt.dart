@@ -699,7 +699,7 @@ class DBCrypt {
       off = 3;
     } else {
       minor = salt[2];
-      if (minor != 'a' || salt[3] != '\$') {
+      if ((minor != 'a' && minor != 'b' && minor != 'x' && minor != 'y') || salt[3] != '\$') {
         throw "Invalid salt revision";
       }
       off = 4;
@@ -733,8 +733,7 @@ class DBCrypt {
     rs.write(rounds.toString());
     rs.write("\$");
     rs.write(_encode_base64(saltb, saltb.length));
-    rs.write(_encode_base64(hashed,
-        _bf_crypt_ciphertext.length * 4 - 1));
+    rs.write(_encode_base64(hashed, _bf_crypt_ciphertext.length * 4 - 1));
     return rs.toString();
   }
 
@@ -751,7 +750,7 @@ class DBCrypt {
       rnd[i] = random.nextInt(256) - 128;
     }
 
-    rs.write("\$2a\$");
+    rs.write("\$2b\$");
     if (log_rounds < 10) {
       rs.write("0");
     }
@@ -766,9 +765,7 @@ class DBCrypt {
   ///
   /// Returns an encoded salt value
   ///
-  String gensaltWithRounds(int log_rounds) {
-    return gensaltWithRoundsAndRandom(log_rounds, new Random.secure());
-  }
+  String gensaltWithRounds(int log_rounds) => gensaltWithRoundsAndRandom(log_rounds, new Random.secure());
 
   ///
   /// Generate a salt for use with the [BCrypt.hashpw] method,
@@ -777,9 +774,7 @@ class DBCrypt {
   ///
   /// Returns an encoded salt value
   ///
-  String gensalt() {
-    return gensaltWithRounds(_GENSALT_DEFAULT_LOG2_ROUNDS);
-  }
+  String gensalt() => gensaltWithRounds(_GENSALT_DEFAULT_LOG2_ROUNDS);
 
   ///
   /// Check that a plaintext password matches a previously hashed one.
