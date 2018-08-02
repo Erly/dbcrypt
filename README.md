@@ -16,7 +16,7 @@ Installation
 Add to your pubspec.yaml the following:
 
 	dependencies:
-	  dbcrypt: any
+	  dbcrypt: ^1.0.0
 
 Usage
 -----
@@ -48,6 +48,6 @@ Dependencies are installed using the [Pub Package Manager][pub].
     
     test/run.sh
 
-[jbc]: http://www.mindrot.org/projects/jBCrypt/
-[d]: http://www.dartlang.org
-[pub]: http://www.dartlang.org/docs/pub-package-manager/
+[jbc]: https://www.mindrot.org/projects/jBCrypt/
+[d]: https://www.dartlang.org
+[pub]: https://www.dartlang.org/tools/pub
