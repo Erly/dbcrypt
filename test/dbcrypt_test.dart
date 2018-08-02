@@ -1,7 +1,7 @@
 library dbcrypt_test;
 
-import 'package:test/test.dart';
 import 'package:dbcrypt/dbcrypt.dart';
+import 'package:test/test.dart';
 
 void main() {
   List<List<String>> test_vectors = [
