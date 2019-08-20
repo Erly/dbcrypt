@@ -56,98 +56,6 @@ import 'dart:typed_data';
 /// @author Erlantz Oniga
 /// @version 0.1.0
 class DBCrypt {
-  // BCrypt parameters
-  final int _GENSALT_DEFAULT_LOG2_ROUNDS = 10;
-  final int _BCRYPT_SALT_LEN = 16;
-
-  // Blowfish parameters
-  final int _BLOWFISH_NUM_ROUNDS = 16;
-
-  // Initial contents of key schedule
-  final Int32List _P_orig = new Int32List(18);
-
-  final Int32List _S_orig = new Int32List(1024);
-
-  // bcrypt IV: "OrpheanBeholderScryDoubt"
-  final Int32List _bf_crypt_ciphertext = new Int32List(6);
-
-  // Table for Base64 encoding
-  final List _base64_code = <String>[
-    '.',
-    '/',
-    'A',
-    'B',
-    'C',
-    'D',
-    'E',
-    'F',
-    'G',
-    'H',
-    'I',
-    'J',
-    'K',
-    'L',
-    'M',
-    'N',
-    'O',
-    'P',
-    'Q',
-    'R',
-    'S',
-    'T',
-    'U',
-    'V',
-    'W',
-    'X',
-    'Y',
-    'Z',
-    'a',
-    'b',
-    'c',
-    'd',
-    'e',
-    'f',
-    'g',
-    'h',
-    'i',
-    'j',
-    'k',
-    'l',
-    'm',
-    'n',
-    'o',
-    'p',
-    'q',
-    'r',
-    's',
-    't',
-    'u',
-    'v',
-    'w',
-    'x',
-    'y',
-    'z',
-    '0',
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9'
-  ];
-
-  // Table for Base64 decoding
-  final Int8List _index_64 = new Int8List(128);
-
-  // Expanded Blowfish key
-  List<int> _P = new List<int>(18);
-  List<int> _S = new List<int>(1024);
-
-  static DBCrypt _dbcrypt;
-
   ///
   /// Creates a new instance of [DBCrypt] if one wasn't created previously,
   /// otherwise it uses the previously created one.
@@ -1365,6 +1273,98 @@ class DBCrypt {
       _bf_crypt_ciphertext[i] = _bf_crypt_ciphertextList[i];
     }
   }
+
+  static DBCrypt _dbcrypt;
+
+  // BCrypt parameters
+  final int _GENSALT_DEFAULT_LOG2_ROUNDS = 10;
+  final int _BCRYPT_SALT_LEN = 16;
+
+  // Blowfish parameters
+  final int _BLOWFISH_NUM_ROUNDS = 16;
+
+  // Initial contents of key schedule
+  final Int32List _P_orig = new Int32List(18);
+
+  final Int32List _S_orig = new Int32List(1024);
+
+  // bcrypt IV: "OrpheanBeholderScryDoubt"
+  final Int32List _bf_crypt_ciphertext = new Int32List(6);
+
+  // Table for Base64 encoding
+  final List _base64_code = <String>[
+    '.',
+    '/',
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'O',
+    'P',
+    'Q',
+    'R',
+    'S',
+    'T',
+    'U',
+    'V',
+    'W',
+    'X',
+    'Y',
+    'Z',
+    'a',
+    'b',
+    'c',
+    'd',
+    'e',
+    'f',
+    'g',
+    'h',
+    'i',
+    'j',
+    'k',
+    'l',
+    'm',
+    'n',
+    'o',
+    'p',
+    'q',
+    'r',
+    's',
+    't',
+    'u',
+    'v',
+    'w',
+    'x',
+    'y',
+    'z',
+    '0',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9'
+  ];
+
+  // Table for Base64 decoding
+  final Int8List _index_64 = new Int8List(128);
+
+  // Expanded Blowfish key
+  List<int> _P = new List<int>(18);
+  List<int> _S = new List<int>(1024);
 
   ///
   /// Encode a byte array using bcrypt's slightly-modified base64 encoding scheme.

@@ -1,3 +1,7 @@
+## 1.0.0+1
+
+- Sort constructor first to avoid lint problems
+
 ## 1.0.0
 
 - Upgrade to Dart 2
