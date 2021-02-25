@@ -62,7 +62,7 @@ class DBCrypt {
   ///
   factory DBCrypt() {
     if (_dbcrypt == null) _dbcrypt = new DBCrypt._defaultConstructor();
-    return _dbcrypt;
+    return _dbcrypt!;
   }
 
   ///
@@ -1274,14 +1274,14 @@ class DBCrypt {
     }
   }
 
-  static DBCrypt _dbcrypt;
+  static DBCrypt? _dbcrypt;
 
   // BCrypt parameters
-  final int _GENSALT_DEFAULT_LOG2_ROUNDS = 10;
-  final int _BCRYPT_SALT_LEN = 16;
+  static const int _gensaltDefaultLog2Rounds = 10;
+  static const int _bcryptSaltLen = 16;
 
   // Blowfish parameters
-  final int _BLOWFISH_NUM_ROUNDS = 16;
+  static const int _blowfishNumRounds = 16;
 
   // Initial contents of key schedule
   final Int32List _P_orig = new Int32List(18);
@@ -1292,7 +1292,7 @@ class DBCrypt {
   final Int32List _bf_crypt_ciphertext = new Int32List(6);
 
   // Table for Base64 encoding
-  final List _base64_code = <String>[
+  static const List _base64Code = <String>[
     '.',
     '/',
     'A',
@@ -1363,8 +1363,8 @@ class DBCrypt {
   final Int8List _index_64 = new Int8List(128);
 
   // Expanded Blowfish key
-  List<int> _P = new List<int>(18);
-  List<int> _S = new List<int>(1024);
+  List<int> _P = new List<int>.filled(18, 0);
+  List<int> _S = new List<int>.filled(1024, 0);
 
   ///
   /// Encode a byte array using bcrypt's slightly-modified base64 encoding scheme.
@@ -1373,7 +1373,7 @@ class DBCrypt {
   ///
   /// Returns a base64-encoded string.
   ///
-  String _encode_base64(Int8List d, int len) {
+  String _encodeBase64(Int8List d, int len) {
     int off = 0, c1, c2;
     StringBuffer rs = new StringBuffer();
 
@@ -1383,24 +1383,24 @@ class DBCrypt {
 
     while (off < len) {
       c1 = d[off++] & 0xff;
-      rs.write(_base64_code[(c1 >> 2) & 0x3f]);
+      rs.write(_base64Code[(c1 >> 2) & 0x3f]);
       c1 = (c1 & 0x03) << 4;
       if (off >= len) {
-        rs.write(_base64_code[c1 & 0x3f]);
+        rs.write(_base64Code[c1 & 0x3f]);
         break;
       }
       c2 = d[off++] & 0xff;
       c1 |= (c2 >> 4) & 0x0f;
-      rs.write(_base64_code[c1 & 0x3f]);
+      rs.write(_base64Code[c1 & 0x3f]);
       c1 = (c2 & 0x0f) << 2;
       if (off >= len) {
-        rs.write(_base64_code[c1 & 0x3f]);
+        rs.write(_base64Code[c1 & 0x3f]);
         break;
       }
       c2 = d[off++] & 0xff;
       c1 |= (c2 >> 6) & 0x03;
-      rs.write(_base64_code[c1 & 0x3f]);
-      rs.write(_base64_code[c2 & 0x3f]);
+      rs.write(_base64Code[c1 & 0x3f]);
+      rs.write(_base64Code[c2 & 0x3f]);
     }
     return rs.toString();
   }
@@ -1426,7 +1426,7 @@ class DBCrypt {
   ///
   /// Returns an array containing the decoded bytes.
   ///
-  Int8List _decode_base64(String s, int maxolen) {
+  Int8List _decodeBase64(String s, int maxolen) {
     StringBuffer rs = new StringBuffer();
     int off = 0, slen = s.length, olen = 0;
     int c1, c2, c3, c4, o;
@@ -1479,7 +1479,7 @@ class DBCrypt {
     int i, n, l = lr[off], r = lr[off + 1];
 
     l ^= _P[0];
-    for (i = 0; i <= _BLOWFISH_NUM_ROUNDS - 2;) {
+    for (i = 0; i <= _blowfishNumRounds - 2;) {
       // Feistel substitution on left word
       n = _S[(l >> 24) & 0xff];
       n += _S[0x100 | ((l >> 16) & 0xff)];
@@ -1494,7 +1494,7 @@ class DBCrypt {
       n += _S[0x300 | (r & 0xff)];
       l ^= n ^ _P[++i];
     }
-    lr[off] = r ^ _P[_BLOWFISH_NUM_ROUNDS + 1];
+    lr[off] = r ^ _P[_blowfishNumRounds + 1];
     lr[off + 1] = l;
   }
 
@@ -1503,7 +1503,7 @@ class DBCrypt {
   ///
   /// Returns the next word of material from data.
   ///
-  int _streamtoword(Int8List data, Int32List offp) {
+  int _streamToWord(Int8List data, Int32List offp) {
     int i, word = 0, off = offp[0];
 
     for (i = 0; i < 4; i++) {
@@ -1518,7 +1518,7 @@ class DBCrypt {
   ///
   /// Initialise the Blowfish key schedule.
   ///
-  void _init_key() {
+  void _initKey() {
     /*for (var i = 0; i < _P_orig.length; i++) {
       _P[i] = _P_orig[i];
     }
@@ -1542,7 +1542,7 @@ class DBCrypt {
     lr[1] = 0;
 
     for (i = 0; i < plen; i++) {
-      _P[i] = _P[i] ^ _streamtoword(key, koffp);
+      _P[i] = _P[i] ^ _streamToWord(key, koffp);
     }
 
     for (i = 0; i < plen; i += 2) {
@@ -1562,8 +1562,8 @@ class DBCrypt {
   /// Perform the "enhanced key schedule" step described by
   /// Provos and Mazieres in ["A Future-Adaptable Password Scheme"](http://www.openbsd.org/papers/bcrypt-paper.ps)
   ///
-  void _ekskey(Int8List data, Int8List key) {
-    int i, plen = _P.length, slen = _S.length;
+  void _eksKey(Int8List data, Int8List key) {
+    int i, pLen = _P.length, sLen = _S.length;
     ;
     Int32List koffp = new Int32List(1);
     koffp[0] = 0;
@@ -1573,21 +1573,21 @@ class DBCrypt {
     lr[0] = 0;
     lr[1] = 0;
 
-    for (i = 0; i < plen; i++) {
-      _P[i] = _P[i] ^ _streamtoword(key, koffp);
+    for (i = 0; i < pLen; i++) {
+      _P[i] = _P[i] ^ _streamToWord(key, koffp);
     }
 
-    for (i = 0; i < plen; i += 2) {
-      lr[0] ^= _streamtoword(data, doffp);
-      lr[1] ^= _streamtoword(data, doffp);
+    for (i = 0; i < pLen; i += 2) {
+      lr[0] ^= _streamToWord(data, doffp);
+      lr[1] ^= _streamToWord(data, doffp);
       _encipher(lr, 0);
       _P[i] = lr[0];
       _P[i + 1] = lr[1];
     }
 
-    for (i = 0; i < slen; i += 2) {
-      lr[0] ^= _streamtoword(data, doffp);
-      lr[1] ^= _streamtoword(data, doffp);
+    for (i = 0; i < sLen; i += 2) {
+      lr[0] ^= _streamToWord(data, doffp);
+      lr[1] ^= _streamToWord(data, doffp);
       _encipher(lr, 0);
       _S[i] = lr[0];
       _S[i + 1] = lr[1];
@@ -1599,7 +1599,7 @@ class DBCrypt {
   ///
   /// Returns an array containing the binary hashed password
   ///
-  Int8List _crypt_raw(Int8List password, Int8List salt, int log_rounds) {
+  Int8List _cryptRaw(Int8List password, Int8List salt, int log_rounds) {
     int rounds, i, j;
     Int32List cdata = new Int32List(_bf_crypt_ciphertext.length);
     for (int i = 0; i < _bf_crypt_ciphertext.length; i++) {
@@ -1612,12 +1612,12 @@ class DBCrypt {
       throw "Bad number of rounds";
     }
     rounds = 1 << log_rounds;
-    if (salt.length != _BCRYPT_SALT_LEN) {
+    if (salt.length != _bcryptSaltLen) {
       throw "Bad salt length";
     }
 
-    _init_key();
-    _ekskey(salt, password);
+    _initKey();
+    _eksKey(salt, password);
     for (i = 0; i < rounds; i++) {
       _key(password);
       _key(salt);
@@ -1678,9 +1678,9 @@ class DBCrypt {
       passwordb[i] = charCodes[i];
     }
 
-    saltb = _decode_base64(real_salt, _BCRYPT_SALT_LEN);
+    saltb = _decodeBase64(real_salt, _bcryptSaltLen);
 
-    hashed = this._crypt_raw(passwordb, saltb, rounds);
+    hashed = this._cryptRaw(passwordb, saltb, rounds);
 
     rs.write("\$2");
     if (minor.codeUnitAt(0) >= 'a'.codeUnitAt(0)) {
@@ -1692,8 +1692,8 @@ class DBCrypt {
     }
     rs.write(rounds.toString());
     rs.write("\$");
-    rs.write(_encode_base64(saltb, saltb.length));
-    rs.write(_encode_base64(hashed, _bf_crypt_ciphertext.length * 4 - 1));
+    rs.write(_encodeBase64(saltb, saltb.length));
+    rs.write(_encodeBase64(hashed, _bf_crypt_ciphertext.length * 4 - 1));
     return rs.toString();
   }
 
@@ -1704,9 +1704,9 @@ class DBCrypt {
   ///
   String gensaltWithRoundsAndRandom(int log_rounds, Random random) {
     StringBuffer rs = new StringBuffer();
-    Int8List rnd = new Int8List(_BCRYPT_SALT_LEN);
+    Int8List rnd = new Int8List(_bcryptSaltLen);
 
-    for (var i = 0; i < _BCRYPT_SALT_LEN; i++) {
+    for (var i = 0; i < _bcryptSaltLen; i++) {
       rnd[i] = random.nextInt(256) - 128;
     }
 
@@ -1716,7 +1716,7 @@ class DBCrypt {
     }
     rs.write(log_rounds.toString());
     rs.write("\$");
-    rs.write(_encode_base64(rnd, rnd.length));
+    rs.write(_encodeBase64(rnd, rnd.length));
     return rs.toString();
   }
 
@@ -1735,7 +1735,7 @@ class DBCrypt {
   ///
   /// Returns an encoded salt value
   ///
-  String gensalt() => gensaltWithRounds(_GENSALT_DEFAULT_LOG2_ROUNDS);
+  String gensalt() => gensaltWithRounds(_gensaltDefaultLog2Rounds);
 
   ///
   /// Check that a plaintext password matches a previously hashed one.

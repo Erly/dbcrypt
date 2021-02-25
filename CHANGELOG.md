@@ -1,3 +1,6 @@
+## 2.0.0
+- Null safety release
+
 ## 1.0.0+1
 
 - Sort constructor first to avoid lint problems

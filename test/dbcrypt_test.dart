@@ -4,7 +4,7 @@ import 'package:dbcrypt/dbcrypt.dart';
 import 'package:test/test.dart';
 
 void main() {
-  List<List<String>> test_vectors = [
+  const testVectors = [
     [
       "",
       "\$2a\$06\$DCq7YPn5Rq63x1Lad4cll.",
@@ -123,10 +123,10 @@ void main() {
   ];
 
   test('Hash password', () {
-    for (int i = 0; i < test_vectors.length; i++) {
-      String plain = test_vectors[i][0];
-      String salt = test_vectors[i][1];
-      String expected = test_vectors[i][2];
+    for (int i = 0; i < testVectors.length; i++) {
+      String plain = testVectors[i][0];
+      String salt = testVectors[i][1];
+      String expected = testVectors[i][2];
       String hashed = new DBCrypt().hashpw(plain, salt);
       expect(hashed, expected);
     }
@@ -134,8 +134,8 @@ void main() {
 
   test('Gensalt with rounds', () {
     for (int i = 4; i <= 12; i++) {
-      for (int j = 0; j < test_vectors.length - 3; j += 4) {
-        String plain = test_vectors[j][0];
+      for (int j = 0; j < testVectors.length - 3; j += 4) {
+        String plain = testVectors[j][0];
         String salt = new DBCrypt().gensaltWithRounds(i);
         String hashed1 = new DBCrypt().hashpw(plain, salt);
         String hashed2 = new DBCrypt().hashpw(plain, hashed1);
@@ -145,8 +145,8 @@ void main() {
   });
 
   test('Gensalt', () {
-    for (int i = 0; i < test_vectors.length - 4; i += 4) {
-      String plain = test_vectors[i][0];
+    for (int i = 0; i < testVectors.length - 4; i += 4) {
+      String plain = testVectors[i][0];
       String salt = new DBCrypt().gensalt();
       String hashed1 = new DBCrypt().hashpw(plain, salt);
       String hashed2 = new DBCrypt().hashpw(plain, hashed1);
@@ -155,18 +155,18 @@ void main() {
   });
 
   test('Checkpw', () {
-    for (int i = 0; i < test_vectors.length; i++) {
-      String plain = test_vectors[i][0];
-      String expected = test_vectors[i][2];
+    for (int i = 0; i < testVectors.length; i++) {
+      String plain = testVectors[i][0];
+      String expected = testVectors[i][2];
       expect(new DBCrypt().checkpw(plain, expected), true);
     }
   });
 
   test('Checkpw failure', () {
-    for (int i = 0; i < test_vectors.length; i++) {
-      int broken_index = (i + 7) % test_vectors.length;
-      String plain = test_vectors[i][0];
-      String expected = test_vectors[broken_index][2];
+    for (int i = 0; i < testVectors.length; i++) {
+      int broken_index = (i + 7) % testVectors.length;
+      String plain = testVectors[i][0];
+      String expected = testVectors[broken_index][2];
       expect(new DBCrypt().checkpw(plain, expected), false);
     }
   });

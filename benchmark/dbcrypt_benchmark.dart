@@ -20,8 +20,8 @@ class CheckPasswordBenchmark extends BenchmarkBase {
   const CheckPasswordBenchmark(int numRounds)
       : super("Check Password $numRounds rounds");
 
-  static int _numRounds;
-  static String _hashedPassword;
+  static late int _numRounds;
+  static late String _hashedPassword;
 
   static void main(int numRounds) {
     _numRounds = numRounds;
