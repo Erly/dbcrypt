@@ -1,6 +1,5 @@
 name: dbcrypt
 version: 2.0.0
-author: Erlantz Oniga <erlantz8@gmail.com>
 description: A port of jBCrypt to Dart. It allows to encrypt passwords using BCrypt with a configurable work factor and check passwords.
 homepage: https://github.com/Erly/dbcrypt
 environment:
