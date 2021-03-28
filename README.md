@@ -16,7 +16,7 @@ Installation
 Add to your pubspec.yaml the following:
 
 	dependencies:
-	  dbcrypt: ^1.0.0
+	  dbcrypt: ^2.0.0
 
 Usage
 -----
